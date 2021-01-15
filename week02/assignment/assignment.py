@@ -85,10 +85,17 @@ class URL_Fetcher(threading.Thread):
         call_count += 1
         threading.Thread.join(self)
 
+# DONE Add any functions you need here
+def fetch_single_json(url):
+    thread = URL_Fetcher(url)
+    thread.start()
+    thread.join()
+    return thread.data
 
-
-# TODO Add any functions you need here
-
+def format_list(name, lst, log):
+    lst.sort()
+    log.write(f'{name}: {len(lst)}')
+    log.write(f'{"".join([x + ",  " for x in lst])}')
 
 def main():
     log = Log(show_terminal=True)
