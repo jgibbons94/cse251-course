@@ -61,8 +61,30 @@ TOP_API_URL = 'https://swapi.dev/api'
 # Global Variables
 call_count = 0
 
+# DONE Add your threaded class definition here
+class URL_Fetcher(threading.Thread):
+    def __init__(self, url, dct = {'data':[]}, key = "data"):
+        threading.Thread.__init__(self)
+        self.url = url
+        self.error = False
+        self.data = None
+        self.dct = dct
+        self.key = key
 
-# TODO Add your threaded class definition here
+    def run(self):
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            self.data = response.json()
+            if "name" in self.data:
+                self.dct[self.key].append(self.data['name'])
+        else:
+            self.error = True
+
+    def join(self):
+        global call_count
+        call_count += 1
+        threading.Thread.join(self)
+
 
 
 # TODO Add any functions you need here
