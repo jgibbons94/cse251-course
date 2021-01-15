@@ -50,7 +50,7 @@ This program does the following:
     ['characters','planets','starships','vehicles','species'] in the returned results
     for episode 3 (the third star wars film). Use a separate thread for each url.
     4. Sort and output the results.
-
+I made this assignment my own by having it output a message from Vader at the end.
 
 """
 
@@ -142,6 +142,18 @@ def main():
               format_list(category, film6dict[category], log)
     log.stop_timer('Total Time To complete')
     log.write(f'There were {call_count} calls to swapi server')
+    log.write("""
+ _________________
+< Isn't this fun? >
+ -----------------
+        \\    ,-^-.
+         \\   !oYo!
+          \\ /./=\\.\\______
+               ##        )\\/\\
+                ||-----w||
+                ||      ||
+
+               Cowth Vader""")
 
 if __name__ == "__main__":
     main()
