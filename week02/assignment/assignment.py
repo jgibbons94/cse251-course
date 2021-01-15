@@ -43,6 +43,15 @@ use this dictionary to make other API calls for data.
 }
 
 ------------------------------------------------------------------------------
+This program does the following:
+    1. In a separate thread, fetch the top level url.
+    2. In a separate thread, fetch the url for the films given by the top level url.
+    3. Get each url of each category of data in
+    ['characters','planets','starships','vehicles','species'] in the returned results
+    for episode 3 (the third star wars film). Use a separate thread for each url.
+    4. Sort and output the results.
+
+
 """
 
 from datetime import datetime, timedelta
