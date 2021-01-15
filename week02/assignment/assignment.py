@@ -101,15 +101,38 @@ def main():
     log = Log(show_terminal=True)
     log.start_timer('Starting to retrieve data from swapi.dev')
 
-    # TODO Retrieve Top API urls
+    # DONE Retrieve Top API urls
 
-    # TODO Retireve Details on film 6
+    films_url = fetch_single_json(TOP_API_URL)['films']
+    films_data =  fetch_single_json(films_url)['results']
 
-    # TODO Display results
+    # DONE Retireve Details on film 6
+    film6_data = [x for x in films_data if x['episode_id'] == 3][0]
+    film6dict = {'title':film6_data['title'],
+                'director':film6_data['director'],
+                'producer':film6_data['producer'],
+                'released':film6_data['release_date'],
+                'characters':[],
+                'planets':[],
+                'starships':[],
+                'vehicles':[],
+                'species':[],
+                }
+    categories = ['characters','planets','starships','vehicles','species']
+    threads = [URL_Fetcher(url, film6dict, category) for category in categories for url in film6_data[category]]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
+    # DONE Display results
+
+    for category in ['title', 'director', 'producer', 'released']:
+              log.write(f'{category}:{film6dict[category]}')
+    for category in categories:
+              format_list(category, film6dict[category], log)
     log.stop_timer('Total Time To complete')
     log.write(f'There were {call_count} calls to swapi server')
-    
 
 if __name__ == "__main__":
     main()
