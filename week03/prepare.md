@@ -18,11 +18,11 @@ Processes do not have this limit.  Each process created in Python contains it's 
 
 Before we can talk about threads and processes, we need to understand the Python Global Interpreter Lock or GIL. It is a mutex (or a lock) that allows only one thread to hold the control of the Python interpreter.
 
-This means that only one thread can be in a state of execution at any one time. If you write single-threaded programs, then the GIL has no impact.  However, when writting paralell and concurrent programs, it is critical to understand it.
+This means that only one thread can be in a state of execution at any one time. If you write single-threaded programs, then the GIL has no impact.  However, when writing parallel and concurrent programs, it is critical to understand it.
 
 ### Process
 
-A Process is a program that has been loaded by the operating system and is running.  It contains 1 to N threads.  All processes contain 1 thread that is called the main thread.  The operating system will start that main thread for the process and when that main thread ends, the process ends. [Process (computing)](https://en.wikipedia.org/wiki/Process_(computing))
+A Process is a program that has been loaded by the operating system and is running.  It contains 1 to N threads.  All processes contain a main thread.  The operating system will start that main thread for the process and when that main thread ends, the process ends. [Process (computing)](https://en.wikipedia.org/wiki/Process_(computing))
 
 
 ### Thread
@@ -34,12 +34,11 @@ A thread is the smallest unit managed by the operating system that is scheduled 
 
 Because of the GIL, all threads are running concurrently in your program.  The operating system will give each thread a little time slice on the CPU where it will appear that they are all running at the some time.
 
-When you create a process in Python, each process will contain their own instance of a GIL.  This allows each process to run in parallel on the computer.
-
+When you create a process in Python, each process will contain their own instance of a GIL.  This allows each process to run in parallel on the computer.  This is because the operating system is free to place each Python process on a different CPU.
 
 ### I/O and CPU Bound code
 
-Computer programs have been analyzed for many years and researchers have noticed that during the life of a process, the process will **switch** between waiting for I/O (ie., user input, Internet requests, file accesses) and running instructions on the CPU (ie., calculations).
+Computer programs have been analyzed for many years and researchers have noticed that during the life of a process, the process will **switch** between waiting for I/O (ie., user input, Internet requests, file accesses) and running instructions on the CPU (ie., calculations, graphics, etc...).
 
 **I/O Bound**
 
@@ -105,6 +104,7 @@ if __name__ == '__main__':
     print(f'After thread global_var = {global_var}')
 ```
 Output:
+
 ```
 Before process global_var = 0
 bob: 123456
@@ -115,17 +115,128 @@ bob: 123456
 After thread global_var = 123456
 ```
 
-In the output, you see that the thread was able to change the global variable while the process wasn't.  This is because the process, when created, gets it's own GIL and it's own copy of `global_var`.  This is different than the `global_var` in the main thread.  This is why it doesn't change.
+In the output, you see that the thread was able to change the global variable while the process wasn't.  This is because the process, when created, gets it's own GIL and it's own copy of `global_var`.  This is different than the `global_var` in the main thread.  This is why it doesn't change.  Other reason not to use global variables.
+
+## Process Pool and Map() function
+
+[Python Documentation](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing.pool)
+
+The pool feature of the multiprocessing package allows you to indicate the run of processes that you want to use for a parallel section of your program.
+
+Break down of the following example:
+
+**with mp.Pool(2)**
+
+This creates a process pool of 2 processes.  They are not running at this point.
+
+**p.map(func, names)**
+
+The map function takes in a reference to a function that you want to apply to the process pool.  The function that you place in the first argument can only have 1 argument.  It this example, it's one name (ie., a string)
+
+The second argument is a list of items that you want the processes to use.  The Pool will divide up the list for the processes in the pool to use.  In this case, `'John'` was used by one process where the process called `func('John')`.  Then 'Mary' was used by the other process (or the same one for 'John'), etc. until all of the items in the list are used.
+
+In the output, you can see that process 1 called func() with two names from the list and the other process handled the other three.  (The function func() required a sleep() call because all of the names in the list would have been processed by just one of the processes).
+
+
+```python
+import os
+import time
+import multiprocessing as mp
+
+def func(name):
+    time.sleep(0.5)
+    print(f'{name}, {os.getpid()}')
+
+if __name__ == '__main__':
+
+    names = ['John', 'Mary', 'April', 'Murry', 'George']
+    # for _ in range(10000):
+    #     names.append('sdfsdf')
+
+    # Create a pool of 2 processes
+    with mp.Pool(2) as p:
+        # map those 2 process to the function func()
+        # Python will call the function func() with each item in the names list
+        # the two processes will run in parallel
+        p.map(func, names)
+```
+
+output:
+
+```
+Mary, 23316
+Murry, 23316
+John, 3672
+April, 3672
+George, 3672
+```
+
+Here is an example of using tuples for the argument to the function used for a process pool.  Notice the output order from the program.  The first tuple in the list was `(1, 2)`.  However, it wasn't the first tuple processed by the pool.  You can't depend on any order of processing while using a pool - you just know that it will be all processed.
+
+```Python
+import os
+import time
+import multiprocessing as mp
+
+def add_two_numbers(values):
+    time.sleep(0.5)
+    number1 = values[0]
+    number2 = values[1]
+    print(f'PID = {os.getpid()}: {number1} + {number2} = {number1 + number2}')
+
+if __name__ == '__main__':
+
+	# create argument list for the pool
+    numbers = []
+    numbers.append((1, 2))
+    numbers.append((11, 52))
+    numbers.append((12, 62))
+    numbers.append((13, 72))
+    numbers.append((1312, 2272))
+    numbers.append((1332, 732))
+    numbers.append((13434, -23272))
+
+    print(f'Numbers list: {numbers}')
+
+    # Create a pool of 2 processes
+    with mp.Pool(2) as p:
+        p.map(add_two_numbers, numbers)
+```
+
+output:
+
+```
+Numbers list: [(1, 2), (11, 52), (12, 62), (13, 72), (1312, 2272), (1332, 732), (13434, -23272)]
+PID = 27284: 1 + 2 = 3
+PID = 27284: 12 + 62 = 74
+PID = 27284: 1332 + 732 = 2064
+PID = 6132: 11 + 52 = 63
+PID = 6132: 13 + 72 = 85
+PID = 6132: 1312 + 2272 = 3584
+PID = 6132: 13434 + -23272 = -9838
+```
+
+Here is the output of the same program above using a pool size of 4. Notice that the list of numbers was spread over the processes. (ie., load balancing).
+
+```
+PID = 26204: 13 + 72 = 85
+PID = 4520: 1 + 2 = 3
+PID = 4520: 1332 + 732 = 2064
+PID = 27168: 11 + 52 = 63
+PID = 27168: 1312 + 2272 = 3584
+PID = 14268: 12 + 62 = 74
+PID = 14268: 13434 + -23272 = -9838
+```
+
+Finally, the size of your process pool should not be greater than the number of CPUs on your computer.  Why is that?
 
 # Analyzing Programs
 
-The goal of a software developer is to study and analyse algorithms.  For concurrency and parallelism, we are looking to see if it makes sense to take the time to try to make it concurrent or parallel.
+The goal of a software developer is to study and analyses algorithms.  For concurrency and parallelism, we are looking to see if it makes sense to take the time to try to make it concurrent or parallel.  Adding parallelism to software involves a learning curve and requires more effort.
 
-Adding parallelism to software involves a learning curve and requries more effort.
+## Fine-grained, coarse-grained, and embarrassing parallel
 
-## Fine-grained, coarse-grained, and embarrassing parallelism
-
-Applications are often classified according to how often their subtasks need to synchronize or communicate with each other. An application exhibits fine-grained parallelism if its subtasks must communicate many times per second; it exhibits coarse-grained parallelism if they do not communicate many times per second, and it exhibits embarrassing parallelism if they rarely or never have to communicate. Embarrassingly parallel applications are considered the easiest to parallelize.
+Applications are often classified according to how often their sub tasks need to synchronize or communicate with each other. An application exhibits fine-grained parallelism if its sub tasks must communicate many times per second; it exhibits coarse-grained parallelism if they do not communicate many times per second, and it exhibits embarrassing parallelism if they rarely or never have to communicate. Embarrassingly parallel applications are considered the easiest to add parallelism.
 
 (Parts of the following is from [Parallelism Document](https://web.engr.oregonstate.edu/~pancake/presentations/sdsc.pdf))
 
@@ -139,7 +250,7 @@ The best type of software to make parallel is called [Embarrassingly parallel](h
 
 > A common example of an embarrassingly parallel problem is 3D video rendering handled by a graphics processing unit, where each frame (forward method) or pixel (ray tracing method) can be handled with no interdependency. Some forms of password cracking are another embarrassingly parallel task that is easily distributed on central processing units, CPU cores, or clusters.
 
-Unfortunately, there are not great deal of embarrassingly parallel problems that we find.  There is, of course, the other extreme case where a program can not have any parallelism. (For example, a shopping cart program.  The program can't do anything until the user makes a choice to do something).
+Unfortunately, there are not a great deal of embarrassingly parallel problems to find.  There is, of course, the other extreme case where a program can not have any parallelism. (For example, a shopping cart program.  The program can't do anything until the user makes a choice to do something).
 
 One of the goals of this course is to understand that we might be able to add parallelism to programs and if it makes sense and is possible, then we can speed up the software.
 

@@ -28,6 +28,9 @@ Instructions:
   can define your class within this Python file (ie., no need to have a seperate
   file for the class)
 - Do not add any global variables except for the ones included in this program.
+- The main goal of the program is to create as many threads objects (In
+  different parts of your program) as you can, then start them all, then wait
+  for all of them to finish.
 
 The call to TOP_API_URL will return the following Dictionary.  Do NOT have this
 dictionary hard coded - use the API call to get this dictionary.  Then you can
@@ -65,7 +68,7 @@ sys.path.append('../../code')
 from cse251 import *
 
 # Const Values
-TOP_API_URL = 'https://swapi.dev/api'
+TOP_API_URL = r'https://swapi.dev/api'
 
 # Global Variables
 call_count = 0

@@ -14,17 +14,18 @@ The website `swapi.dev` contains details of all of the Star Wars films.  You can
 
 **Coding Instructions**
 
-- Each API call must only retrieve one piece of information
+- Each API call must only retrieve one piece of information.
+- You must to install the Python package "requests".
 - You are not allowed to use any other modules/packages except for the ones used in this assignment.
 - The only "fixed" or hard coded URL that you can use is TOP_API_URL.  Use this URL to retrieve other URLs that you can use to retrieve information form the website.
 - You are limited to about 10,000 calls to the swapi website.  That sounds like a lot, but you can reach this limit. If you leave this assignment to the last day it's due, you might be locked out of the website and you will have to submit what you have at that point.  There are no extensions because you reached this server limit. Work ahead and spread working on the assignment over multiple days.
-- You need to match the output outlined in the dcription of the assignment. Note that the names are sorted.
-- You are required to use a threaded class (inherited from threading.Thread) for this assignment.  This object will make the API calls to the swapi server. You can define your class within this Python file (ie., no need to have a seperate file for the class)
+- You need to match the output outlined in the description of the assignment. Note that the names are sorted.
+- You are required to use a threaded class (inherited from threading.Thread) for this assignment.  This object will make the API calls to the swapi server. You can define your class within this Python file (ie., no need to have a separate file for the class)
 - Do not add any global variables except for the ones included in this program.
 
 ## Sample Output (Log file)
 
-The following in the **required** output of your assignment.  Notice that the names of characters, planets, etc... are sorted.
+The following in the **required** output of your assignment.  Notice that the names of characters, planets, etc... are sorted.  Don't worry about the blank lines or the extra "," you might get while printing the names.
 
 ```text
 16:57:24| Starting to retrieve data from swapi.dev
@@ -52,6 +53,44 @@ The following in the **required** output of your assignment.  Notice that the na
 16:57:35| Total Time To complete = 10.76325120
 16:57:35| There were 94 calls to swapi server
 
+```
+
+## How to use the requests package
+
+There are a number of Python packages that can help you make Internet calls.  We will be using the package `requests`.
+
+### Install Package
+
+This package needs to be installed.  Read the details on how to install packages in the `resources/software` section of the course.  Using pip, the command is `pip install requests`.  Using Python, it's `python -m pip install requests`.
+
+### How to make an Internet call
+
+```python
+import requests
+import json
+
+# Const Values
+TOP_API_URL = r'https://swapi.dev/api'
+
+if __name__ == '__main__':
+
+    response = requests.get(TOP_API_URL)
+    
+    # Check the status code to see if the request succeeded.
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+        print('\nHere is the people url:', data['people'])
+    else:
+        print('Error in requesting ID')
+```
+
+Output:
+
+```
+{'people': 'http://swapi.dev/api/people/', 'planets': 'http://swapi.dev/api/planets/', 'films': 'http://swapi.dev/api/films/', 'species': 'http://swapi.dev/api/species/', 'vehicles': 'http://swapi.dev/api/vehicles/', 'starships': 'http://swapi.dev/api/starships/'}
+
+Here is the people url: http://swapi.dev/api/people/
 ```
 
 ## Rubric
