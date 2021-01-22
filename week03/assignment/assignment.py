@@ -85,8 +85,8 @@ if __name__ == '__main__':
     all_process_time = timeit.default_timer()
     log = Log(show_terminal=True)
 
-    xaxis_frames = []
-    yaxis_times = []
+    xaxis_frames = [i + 1 for i in range(CPU_COUNT)]
+    yaxis_times = [process_all_frames(x) for x in xaxis_frames]
 
     log.write(f'Total Time for ALL procesing: {timeit.default_timer() - all_process_time}')
 
