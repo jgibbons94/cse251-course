@@ -63,6 +63,11 @@ def create_new_frame(image_file, green_file, process_file):
 
 
 # TODO add any functions to need here
+def process_frame(image_number):
+    image_file = rf'elephant/image{image_number:03d}.png'
+    green_file = rf'green/image{image_number:03d}.png'
+    process_file = rf'processed/image{image_number:03d}.png'
+    create_new_frame(image_file, green_file, process_file)
 
 
 
