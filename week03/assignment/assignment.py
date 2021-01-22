@@ -69,6 +69,13 @@ def process_frame(image_number):
     process_file = rf'processed/image{image_number:03d}.png'
     create_new_frame(image_file, green_file, process_file)
 
+def process_all_frames(process_count):
+    start_time = timeit.default_timer()
+    with mp.Pool(process_count) as p:
+        p.map(process_frame, range(1, FRAME_COUNT + 1))
+    time_taken = timeit.default_timer() - start_time
+    print(f'\nTime To Process all images = {time_taken}')
+    return time_taken
 
 
 if __name__ == '__main__':
