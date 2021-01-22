@@ -33,6 +33,7 @@ CPU_COUNT = mp.cpu_count() + 4
 
 # TODO Your final video need to have 300 processed frames.  However, while you are 
 # testing your code, set this much lower
+#FRAME_COUNT = 300
 FRAME_COUNT = 20
 
 RED   = 0
