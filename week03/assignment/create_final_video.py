@@ -12,7 +12,7 @@ def main():
         print('\nERROR: the folder "processed" doesn\'t exist\n')
         return 
 
-    if platform.system() == 'Windows':
+    if platform.system() in ['Linux', 'Windows']:
         command = r'ffmpeg -y -i processed/image%3d.png final.mp4'
     else:
         command = r'./ffmpeg -y -i processed/image%3d.png final.mp4'

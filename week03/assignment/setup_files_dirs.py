@@ -12,7 +12,7 @@ def create_dir(folder):
 
 def create_images(video_file, folder):
     # limit the number of frames to 300
-    if platform.system() == 'Windows':
+    if platform.system() in ['Linux', 'Windows']:
         command = rf'ffmpeg -i {video_file} -vframes 300 {folder}/image%3d.png'
     else:
         command = rf'./ffmpeg -i {video_file} -vframes 300 {folder}/image%3d.png'
