@@ -37,10 +37,8 @@ SHOW_PLOT = len(sys.argv) > 1
 # 4 more than the number of cpu's on your computer
 CPU_COUNT = mp.cpu_count() + 4  
 
-# TODO Your final video need to have 300 processed frames.  However, while you are 
-# testing your code, set this much lower
-#FRAME_COUNT = 300
-FRAME_COUNT = 20
+FRAME_COUNT = 300
+#FRAME_COUNT = 20
 
 RED   = 0
 GREEN = 1
