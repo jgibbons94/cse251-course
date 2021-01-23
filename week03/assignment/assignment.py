@@ -68,19 +68,20 @@ def create_new_frame(image_file, green_file, process_file):
     image_new.save(process_file)
 
 
-# TODO add any functions to need here
 def process_frame(image_number):
     image_file = rf'elephant/image{image_number:03d}.png'
     green_file = rf'green/image{image_number:03d}.png'
     process_file = rf'processed/image{image_number:03d}.png'
     create_new_frame(image_file, green_file, process_file)
 
-def process_all_frames(process_count):
+def process_all_frames(process_count, log):
+    log.write(f'process_count = {process_count}')
     start_time = timeit.default_timer()
     with mp.Pool(process_count) as p:
         p.map(process_frame, range(1, FRAME_COUNT + 1))
     time_taken = timeit.default_timer() - start_time
-    print(f'\nTime To Process all images = {time_taken}')
+    print()
+    log.write(f'Time To Process all images = {time_taken}')
     return time_taken
 
 
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     log = Log(show_terminal=True)
 
     xaxis_frames = [i + 1 for i in range(CPU_COUNT)]
-    yaxis_times = [process_all_frames(x) for x in xaxis_frames]
+    yaxis_times = [process_all_frames(x, log) for x in xaxis_frames]
 
     log.write(f'Total Time for ALL procesing: {timeit.default_timer() - all_process_time}')
 
