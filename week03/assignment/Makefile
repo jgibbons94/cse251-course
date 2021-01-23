@@ -10,7 +10,7 @@ processed/image001.png: assignment.py ${ELEPHANT_IMGS} ${GREEN_IMGS}
 	python3 assignment.py
 
 final.mp4: create_final_video.py ${PROCESSED_IMGS}
-	python3 create_final_video.py
+	python3 create_final_video.py --noshowplot
 
 clean:
 	rm -rfv processed green elephant *.log final.mp4 "Plot for 20 frames.png" "Plot for 300 frames.png"

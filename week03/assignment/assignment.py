@@ -28,6 +28,12 @@ import os, sys
 sys.path.append('../../code')
 from cse251 import *
 
+# If True, show the plot. Else, save time by not showing plot. I use a Jupyter
+# server to run everything remotely on my laptop.  plot.show() waits for me to
+# close the window, and I don't want to need to be near my laptop when I run
+# everything.
+SHOW_PLOT = len(sys.argv) > 1
+
 # 4 more than the number of cpu's on your computer
 CPU_COUNT = mp.cpu_count() + 4  
 
@@ -100,4 +106,5 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig(f'Plot for {FRAME_COUNT} frames.png')
-    plt.show()
+    if SHOW_PLOT:
+        plt.show()
