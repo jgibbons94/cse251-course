@@ -107,9 +107,9 @@ class Dealer(threading.Thread):
 def main():
     log = Log(show_terminal=True)
 
-    # TODO Create semaphore(s) ?
-    # TODO Create queue(s) ?
-    # TODO Create lock(s) ?
+    full = threading.Semaphore(0)
+    empty = threading.Semaphore(MAX_QUEUE_SIZE)
+    q = queue.Queue()
 
     # This tracks the length of the car queue during receiving cars by the dealership
     # i.e., update this list each time the dealer receives a car
