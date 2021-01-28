@@ -15,6 +15,18 @@ Instructions:
 - Only process the given MP4 files for this assignment
 
 ------------------------------------------------------------------------------
+I think I earned a 100% on this assignment:
+-> I followed the instructions
+-> I customized it to selectively show the plot window.
+
+My design is as follows:
+
+The main program calls process_all_frames for every number in range of CPU_COUNT.
+
+process_all_frames uses a pool of process_count processes to map process_frame through all the
+frames in from 1 to FRAME_COUNT inclusive.
+
+process_frame is adapted from the sample code.
 """
 
 from matplotlib.pylab import plt  # load plot library
