@@ -124,7 +124,8 @@ def main():
     dealer.start()
     factory.start()
 
-    # TODO Wait for factory and dealership to complete
+    dealer.join()
+    factory.join()
 
     log.stop_timer(f'All {sum(queue_stats)} have been created')
 
