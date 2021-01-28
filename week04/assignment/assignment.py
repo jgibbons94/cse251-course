@@ -117,7 +117,7 @@ def main():
 
     factory = Factory(full, empty, q)
 
-    # TODO create your one dealership
+    dealer = Dealer(full, empty, q, queue_stats)
 
     log.start_timer()
 
