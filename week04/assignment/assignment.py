@@ -91,7 +91,15 @@ class Dealer(threading.Thread):
 
     def run(self):
         while True:
-            # TODO process a car if there is one
+            size = self.q.qsize()
+            #print(f"dealer: {size}")
+            self.full.acquire()
+            self.empty.release()
+            self.queue_stats[size-1] += 1
+            car = self.q.get()
+            self.cars_processed += 1
+            if self.cars_processed == CARS_TO_PRODUCE:
+                return
 
             # Sleep a little - don't change
             time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 0))
