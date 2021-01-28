@@ -131,7 +131,8 @@ def main():
 
     xaxis = [i for i in range(1, MAX_QUEUE_SIZE + 1)]
     plot = Plots()
-    plot.bar(xaxis, queue_stats, title=f'{sum(queue_stats)} Produced: Count VS Queue Size', x_label='Queue Size', y_label='Count')
+    #Showing the plot hangs. Don't show the plot.
+    plot.bar(xaxis, queue_stats, title=f'{sum(queue_stats)} Produced: Count VS Queue Size', x_label='Queue Size', y_label='Count', show_plot = False, filename="cars.png")
 
 if __name__ == '__main__':
     main()
