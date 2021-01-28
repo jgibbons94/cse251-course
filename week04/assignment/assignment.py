@@ -121,7 +121,8 @@ def main():
 
     log.start_timer()
 
-    # TODO Start factory and dealership
+    dealer.start()
+    factory.start()
 
     # TODO Wait for factory and dealership to complete
 
