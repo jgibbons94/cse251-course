@@ -16,6 +16,10 @@ Instructions:
 - the shared queue between the threads that are used to hold the Car objects
   can not be greater than MAX_QUEUE_SIZE
 
+--------------------
+I think I earned a 100 on this assignment.
+I followed instructions as given.
+I also made it my own by saving the graph to a file instead of displaying it.
 """
 
 import time
