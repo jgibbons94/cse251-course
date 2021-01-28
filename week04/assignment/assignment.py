@@ -58,8 +58,6 @@ class Car():
     def display(self):
         print(f'{self.make} {self.model}, {self.year}')
 
-
-
 class Factory(threading.Thread):
     """ This is a factory.  It will create cars and place them on the car queue """
 
@@ -68,15 +66,12 @@ class Factory(threading.Thread):
         # to create cars and to place them in a queue.
         pass
 
-
     def run(self):
         for i in range(self.car_count):
             # TODO Create a Car object and place it on a queue for the dealerships
 
             # Sleep a little - don't change
             time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 4))
-
-
 
 class Dealer(threading.Thread):
     """ This is a dealer that receives cars """
@@ -92,8 +87,6 @@ class Dealer(threading.Thread):
 
             # Sleep a little - don't change
             time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 0))
-
-
 
 def main():
     log = Log(show_terminal=True)
@@ -121,8 +114,6 @@ def main():
     xaxis = [i for i in range(1, MAX_QUEUE_SIZE + 1)]
     plot = Plots()
     plot.bar(xaxis, queue_stats, title=f'{sum(queue_stats)} Produced: Count VS Queue Size', x_label='Queue Size', y_label='Count')
-
-
 
 if __name__ == '__main__':
     main()
