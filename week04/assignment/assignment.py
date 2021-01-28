@@ -115,7 +115,7 @@ def main():
     # i.e., update this list each time the dealer receives a car
     queue_stats = [0] * MAX_QUEUE_SIZE
 
-    # TODO create your one factory
+    factory = Factory(full, empty, q)
 
     # TODO create your one dealership
 
