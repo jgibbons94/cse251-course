@@ -61,9 +61,12 @@ class Car():
 class Factory(threading.Thread):
     """ This is a factory.  It will create cars and place them on the car queue """
 
-    def __init__(self):
-        # TODO, you need to add arguments that will pass all of data that 1 factory needs
-        # to create cars and to place them in a queue.
+    def __init__(self, full, empty, q):
+        threading.Thread.__init__(self)
+        self.full = full
+        self.empty = empty
+        self.q = q
+        self.car_count = CARS_TO_PRODUCE
         pass
 
     def run(self):
