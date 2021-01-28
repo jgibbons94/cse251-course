@@ -71,8 +71,9 @@ class Factory(threading.Thread):
 
     def run(self):
         for i in range(self.car_count):
-            # TODO Create a Car object and place it on a queue for the dealerships
-
+            self.full.release()
+            self.empty.acquire()
+            self.q.put(Car())
             # Sleep a little - don't change
             time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 4))
 
