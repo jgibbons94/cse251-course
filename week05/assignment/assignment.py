@@ -114,7 +114,19 @@ class Dealer(threading.Thread):
 
     def run(self):
         while True:
-            # TODO handle a car
+            #full --
+            self.full.acquire()
+            size = self.q.qsize()
+            car = self.q.get(block=False)
+            #empty ++
+            self.empty.release()
+            if car == None:
+                self.full.release()
+                self.empty.acquire()
+                self.q.put(None)
+                return
+            self.queue_stats[size-1] += 1
+            self.cars_processed += 1
 
             # Sleep a little - don't change
             time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 0))
