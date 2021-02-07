@@ -65,7 +65,14 @@ class Car():
 class Factory(threading.Thread):
     """ This is a factory.  It will create cars and place them on the car queue """
 
-    def __init__(self):
+    def __init__(self, full, empty, q, car_count, barrier, id):
+        threading.Thread.__init__(self)
+        self.full = full
+        self.empty = empty
+        self.q = q
+        self.car_count = car_count
+        self.barrier = barrier
+        self.id = id
         pass
 
     def run(self):
