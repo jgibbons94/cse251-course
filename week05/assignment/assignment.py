@@ -103,7 +103,13 @@ class Factory(threading.Thread):
 class Dealer(threading.Thread):
     """ This is a dealer that receives cars """
 
-    def __init__(self):
+    def __init__(self, full, empty, q, queue_stats):
+        threading.Thread.__init__(self)
+        self.full = full
+        self.empty = empty
+        self.q = q
+        self.queue_stats = queue_stats
+        self.cars_processed = 0
         pass
 
     def run(self):
