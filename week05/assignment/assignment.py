@@ -139,9 +139,13 @@ def run_production(factory_count, dealer_count):
     """
 
     # TODO Create semaphore(s)
+    full = threading.Semaphore(0)
+    empty = threading.Semaphore(MAX_QUEUE_SIZE)
     # TODO Create queue(s)
+    q = queue.Queue()
     # TODO Create lock(s)
     # TODO Create barrier(s)
+    barrier = threading.Barrier(factory_count)
 
     # This is used to track the number of cars receives by each dealer
     dealer_stats = list([0] * dealer_count)
@@ -149,16 +153,29 @@ def run_production(factory_count, dealer_count):
     # This tracks the length of the car queue during receiving cars by the dealerships
     # It is passed to each dealership to fill out
     queue_stats = list([0] * MAX_QUEUE_SIZE)
+    # This tracks the length of the car queue during receiving cars by the dealership
+    # i.e., update this list each time the dealer receives a car
+    queue_stats = [0] * MAX_QUEUE_SIZE
 
     # TODO create your factories, each factory will create CARS_TO_CREATE_PER_FACTORY
+    factories = [Factory(full, empty, q, CARS_TO_CREATE_PER_FACTORY, barrier, i) for i in range(factory_count)]
 
     # TODO create your dealerships
+    dealers = [Dealer(full, empty, q, queue_stats) for _ in range(dealer_count)]
 
     log.start_timer()
 
     # TODO Start factories and dealerships
+    for dealer in dealers:
+        dealer.start()
+    for factory in factories:
+        factory.start()
 
     # TODO Wait for factories and dealerships to complete
+    for dealer in dealers:
+        dealer.join()
+    for factory in factories:
+        factory.join()
 
     run_time = log.stop_timer(f'{sum(queue_stats)} cars have been created')
 
