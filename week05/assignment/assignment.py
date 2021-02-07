@@ -195,7 +195,8 @@ def main(log):
         times.append(run_time)
 
     plot = Plots()
-    plot.bar(xaxis, times, title=f'Production Time VS Threads', x_label='Thread Count', y_label='Time')
+#    plot.bar(xaxis, times, title=f'Production Time VS Threads', x_label='Thread Count', y_label='Time')
+    plot.bar(xaxis, times, title=f'Production Time VS Threads', x_label='Thread Count', y_label='Time', show_plot = False, filename = "cars.png")
 
 
 if __name__ == '__main__':
