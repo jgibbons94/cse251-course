@@ -77,10 +77,25 @@ class Factory(threading.Thread):
 
     def run(self):
         # TODO produce the cars
+        for i in range(self.car_count):
+            #empty--
+            self.empty.acquire()
+            self.q.put(Car())
+            #full++
+            self.full.release()
+            # Sleep a little - don't change
+            #time.sleep(random.random() / (SLEEP_REDUCE_FACTOR + 4))
 
         # TODO wait until all of the factories are finished producing cars
+        self.barrier.wait()
 
         # TODO "Wake up/signal" the dealerships one more time.  Select one factory to do this
+        if self.id == 0:
+            #empty --
+            self.empty.acquire()
+            self.q.put(None)
+            #full ++
+            self.full.release()
         pass
 
 
