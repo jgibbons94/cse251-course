@@ -1,11 +1,9 @@
 """
 Course: CSE 251
-Lesson Week: 04
+Lesson Week: 05
 File: assignment.py
 Author: Brother Comeau
-
 Purpose: Assignment 05 - Factories and Stores
-
 Instructions:
 
 - Read the comments in the following code.  
