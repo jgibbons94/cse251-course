@@ -2,27 +2,6 @@
 
 # 06 Prepare: Multiprocessing Module and Pipes
 
-
-```python
-import multiprocessing as mp
-
-def f(conn):
-    conn.send([42, None, 'hello'])
-    conn.close()
-
-if __name__ == '__main__':
-    parent_conn, child_conn = mp.Pipe()
-    p = Process(target=f, args=(child_conn,))
-    p.start()
-    print(parent_conn.recv())   # prints "[42, None, 'hello']"
-    p.join()
-```
-
-
-Talk about Value and Array
-from multiprocessing import Process, Value, Array
-
-
 ## Overview
 
 We will be covering two parts of the multiprocessing module - Pipe and Value.  They are used to allow processes to shared information between them.
@@ -99,7 +78,7 @@ Received: World
 
 ## Sharing data between processes
 
-Normal variables can't be shared between processes because each process has a complete copy of the Python program - their own GIL.  However, there is a method for sharing data. We will need to use the `multiprocessing` module for this.
+Normally variables can't be shared between processes because each process has a complete copy of the program - their own GIL.  However, there is a method for sharing data. We will need to use the `multiprocessing` module for this.
 
 Here is an example from [the Python documentation website](https://docs.python.org/3/library/multiprocessing.html#sharing-state-between-processes)
 
@@ -174,3 +153,5 @@ def f(n, a):
 	for i in range(len(a)):
 	    a[i] = -a[i]
 ```
+
+When using shared variables, remember that if there are processes writing and reading them, when you need to stop a race condition by using a shared lock.
