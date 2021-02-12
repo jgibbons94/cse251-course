@@ -56,7 +56,6 @@ class Bag():
     def __str__(self):
         return str(self.items)
 
-
 class Gift():
     """ Gift of a large marble and a bag of marbles - Don't change for the 93% """
 
@@ -68,7 +67,6 @@ class Gift():
         marbles = str(self.marbles)
         marbles = marbles.replace("'", "")
         return f'Large marble: {self.large_marble}, marbles: {marbles[1:-1]}'
-
 
 class Marble_Creator(mp.Process):
     """ This class "creates" marbles and sends them to the bagger """
@@ -111,8 +109,6 @@ class Marble_Creator(mp.Process):
             time.sleep(self.creator_delay)
         self.pipeout.send(None)
 
-
-
 class Bagger(mp.Process):
     """ Receives marbles from the marble creator, then there are enough
         marbles, the bag of marbles are sent to the assembler """
@@ -132,7 +128,6 @@ class Bagger(mp.Process):
             else:
                 break
         return bag
-
 
     def run(self):
         '''
@@ -215,8 +210,6 @@ def display_final_boxes(filename, log):
     else:
         log.write_error(f'The file {filename} doesn\'t exist.  No boxes were created.')
 
-
-
 def main():
     """ Main function """
 
@@ -268,8 +261,6 @@ def main():
 
     log.write(f"{settings[MARBLE_COUNT] // settings[BAG_COUNT]} gifts are expected. Ho ho ho!")
     log.write(f"{gift_count.value} gifts were created. Ho ho ho!")
-
-
 
 if __name__ == '__main__':
     main()
