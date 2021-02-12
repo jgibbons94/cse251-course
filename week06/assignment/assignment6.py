@@ -157,9 +157,11 @@ class Assembler(mp.Process):
         Sends the completed gift to the wrapper """
     marble_names = ('Lucky', 'Spinner', 'Sure Shot', 'The Boss', 'Winner', '5-Star', 'Hercules', 'Apollo', 'Zeus')
 
-    def __init__(self):
+    def __init__(self, pipein, pipeout, assembler_delay):
         mp.Process.__init__(self)
-        # TODO Add any arguments and variables here
+        self.pipeout = pipeout
+        self.pipein = pipein
+        self.assembler_delay = assembler_delay
 
     def run(self):
         '''
@@ -169,7 +171,14 @@ class Assembler(mp.Process):
             sleep the required amount
         tell the wrapper that there are no more gifts
         '''
-
+        while True:
+            bag = self.pipein.recv()
+            if bag is None:
+                self.pipeout.send(None)
+                break
+            gift = Gift(random.choice(Assembler.marble_names), bag)
+            self.pipeout.send(gift)
+            time.sleep(self.assembler_delay)
 
 class Wrapper(mp.Process):
     """ Takes created gifts and wraps them by placing them in the boxes file """
