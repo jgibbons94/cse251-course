@@ -92,9 +92,11 @@ class Marble_Creator(mp.Process):
         'Brown', 'Gold', 'Blue-Green', 'Antique Bronze', 'Mint Green', 'Royal Blue', 
         'Light Orange', 'Pastel Blue', 'Middle Green')
 
-    def __init__(self):
+    def __init__(self, pipeout, marble_count, creator_delay):
         mp.Process.__init__(self)
-        # TODO Add any arguments and variables here
+        self.pipeout = pipeout
+        self.marble_count = marble_count
+        self.creator_delay = creator_delay
 
     def run(self):
         '''
@@ -104,7 +106,11 @@ class Marble_Creator(mp.Process):
             sleep the required amount
         Let the bagger know there are no more marbles
         '''
-        pass
+        for _ in range(self.marble_count):
+            self.pipeout.send(random.choice(Marble_Creator.colors))
+            time.sleep(self.creator_delay)
+        self.pipeout.send(None)
+
 
 
 class Bagger(mp.Process):
