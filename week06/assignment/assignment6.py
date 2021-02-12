@@ -195,7 +195,6 @@ class Wrapper(mp.Process):
                 gift = self.pipein.recv()
                 if gift is  None:
                     break
-                print(gift)
                 f.write(str(gift))
                 self.gift_count.value += 1
                 time.sleep(self.wrapper_delay)
