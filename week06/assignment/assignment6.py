@@ -237,9 +237,11 @@ def main():
     log.write(f'settings["assembler-delay"] = {settings[ASSEMBLER_DELAY]}')
     log.write(f'settings["wrapper-delay"]   = {settings[WRAPPER_DELAY]}')
 
-    # TODO: create Pipes between creator -> bagger -> assembler -> wrapper
+    creator_out, bagger_in = mp.Pipe()
+    bagger_out, assembler_in = mp.Pipe()
+    assembler_out, wrapper_in = mp.Pipe()
 
-    # TODO create variable to be used to count the number of gifts
+    gift_count = mp.Value('i', 0)
 
     # delete final boxes file
     if os.path.exists(BOXES_FILENAME):
@@ -247,17 +249,25 @@ def main():
 
     log.write('Create the processes')
 
-    # TODO Create the processes (ie., classes above)
+    processes = [
+            Marble_Creator(creator_out, settings[MARBLE_COUNT], settings[CREATOR_DELAY]),
+            Bagger(bagger_in, bagger_out,settings[BAG_COUNT], settings[BAGGER_DELAY]), 
+            Assembler(assembler_in, assembler_out, settings[ASSEMBLER_DELAY]),
+            Wrapper(wrapper_in, settings[WRAPPER_DELAY], gift_count)
+            ]
 
     log.write('Starting the processes')
-    # TODO add code here
+    for process in processes:
+        process.start()
 
     log.write('Waiting for processes to finish')
-    # TODO add code here
+    for process in processes:
+        process.join()
 
     display_final_boxes(BOXES_FILENAME, log)
 
-    # TODO Log the number of gifts created.
+    log.write(f"{settings[MARBLE_COUNT] // settings[BAG_COUNT]} gifts are expected. Ho ho ho!")
+    log.write(f"{gift_count.value} gifts were created. Ho ho ho!")
 
 
 
