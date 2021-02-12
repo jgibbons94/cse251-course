@@ -182,9 +182,11 @@ class Assembler(mp.Process):
 
 class Wrapper(mp.Process):
     """ Takes created gifts and wraps them by placing them in the boxes file """
-    def __init__(self):
+    def __init__(self, pipein, wrapper_delay, gift_count):
         mp.Process.__init__(self)
-        # TODO Add any arguments and variables here
+        self.pipein = pipein
+        self.wrapper_delay = wrapper_delay
+        self.gift_count = gift_count
 
     def run(self):
         '''
@@ -193,7 +195,15 @@ class Wrapper(mp.Process):
             save gift to the file with the current time
             sleep the required amount
         '''
-
+        with open("boxes.txt", mode='w') as f:
+            while True:
+                gift = self.pipein.recv()
+                if gift is  None:
+                    break
+                print(gift)
+                f.write(str(gift))
+                self.gift_count.value += 1
+                time.sleep(self.wrapper_delay)
 
 def display_final_boxes(filename, log):
     """ Display the final boxes file to the log file -  Don't change """
