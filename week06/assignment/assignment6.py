@@ -116,9 +116,23 @@ class Marble_Creator(mp.Process):
 class Bagger(mp.Process):
     """ Receives marbles from the marble creator, then there are enough
         marbles, the bag of marbles are sent to the assembler """
-    def __init__(self):
+    def __init__(self,  pipein, pipeout, bag_count, bagger_delay):
         mp.Process.__init__(self)
-        # TODO Add any arguments and variables here
+        self.pipeout = pipeout
+        self.pipein = pipein
+        self.bag_count = bag_count
+        self.bagger_delay = bagger_delay
+
+    def make_bag(self):
+        bag = Bag()
+        for _ in range(self.bag_count):
+            marble = self.pipein.recv()
+            if marble is not None:
+                bag.add(marble)
+            else:
+                break
+        return bag
+
 
     def run(self):
         '''
@@ -128,7 +142,15 @@ class Bagger(mp.Process):
             sleep the required amount
         tell the assembler that there are no more bags
         '''
-
+        while True:
+            bag = self.make_bag()
+            if bag.get_size() == self.bag_count:
+                pass
+                self.pipeout.send(bag)
+            else:
+                self.pipeout.send(None)
+                break
+            time.sleep(self.bagger_delay)
 
 class Assembler(mp.Process):
     """ Take the set of marbles and create a gift from them.
