@@ -97,7 +97,7 @@ def task_upper(text):
     Add the following to the global list:
         {text} ==>  uppercase version of {text}
     """
-    pass
+    return f"{text} ==> {text.upper()}"
 
 def task_sum(start_value, end_value):
     """
