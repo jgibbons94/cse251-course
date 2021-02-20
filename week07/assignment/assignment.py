@@ -78,7 +78,7 @@ def task_prime(value):
             - or -
         {value} is not prime
     """
-    pass
+    return f"{value} is prime" if is_prime(value) else f"{value} is not prime"
 
 def task_word(word):
     """
