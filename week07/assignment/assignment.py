@@ -88,7 +88,9 @@ def task_word(word):
             - or -
         {word} not found *****
     """
-    pass
+    with open('words.txt') as f:
+            found = word in map(lambda x:x[:-1],f.readlines())
+            return f"{word} Found" if found else f"{word} not found*****"
 
 def task_upper(text):
     """
