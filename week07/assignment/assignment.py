@@ -116,10 +116,29 @@ def task_name(url):
 
 
 def main():
+    global result_primes, result_words, result_upper, result_sums, result_names
+    PRIME_PROCESSES = 4
+    WORD_PROCESSES  = 1
+    UPPER_PROCESSES = 1
+    SUM_PROCESSES   = 1
+    NAME_PROCESSES  = 40
+
     log = Log(show_terminal=True)
     log.start_timer()
 
-    # TODO Create process pools
+    prime_pool = mp.Pool()
+    word_pool  = mp.Pool()
+    upper_pool = mp.Pool()
+    sum_pool   = mp.Pool()
+    name_pool  = mp.Pool()
+
+    prime_params = []
+    word_params  = []
+    upper_params = []
+    sum_params   = []
+    name_params  = []
+
+
 
     count = 0
     task_files = glob.glob("*.task")
@@ -131,20 +150,45 @@ def main():
         count += 1
         task_type = task['task']
         if task_type == TYPE_PRIME:
-            task_prime(task['value'])
+            prime_params.append((task['value'],))
         elif task_type == TYPE_WORD:
-            task_word(task['word'])
+            word_params.append((task['word'],))
         elif task_type == TYPE_UPPER:
-            task_upper(task['text'])
+            upper_params.append((task['text'],))
         elif task_type == TYPE_SUM:
-            task_sum(task['start'], task['end'])
+            sum_params.append((task['start'], task['end']))
         elif task_type == TYPE_NAME:
-            task_name(task['url'])
+            name_params.append((task['url'],))
         else:
             log.write(f'Error: unknown task type {task_type}')
 
     # TODO start and wait pools
+    prime_async = [prime_pool.apply_async(task_prime, args) for args in prime_params]
+    word_async  = [word_pool.apply_async(task_word,   args) for args in word_params ]
+    upper_async = [upper_pool.apply_async(task_upper, args) for args in upper_params]
+    sum_async   = [sum_pool.apply_async(task_sum,     args) for args in sum_params  ]
+    name_async  = [name_pool.apply_async(task_name,   args) for args in name_params ]
 
+    prime_pool.close()
+    word_pool.close()
+    upper_pool.close()
+    sum_pool.close()
+    name_pool.close()
+
+
+    prime_pool.join()
+    word_pool.join()
+    upper_pool.join()
+    sum_pool.join()
+    name_pool.join()
+
+    for x in prime_async:
+        x.wait()
+    result_primes = [ar.get() for ar in prime_async]
+    result_words  = [ar.get() for ar in word_async ]
+    result_upper = [ar.get() for ar in upper_async]
+    result_sums   = [ar.get() for ar in sum_async  ]
+    result_names  = [ar.get() for ar in name_async ]
 
     # Do not change the following code (to the end of the main function)
     def log_list(lst, log):
