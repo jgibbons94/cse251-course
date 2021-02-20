@@ -10,7 +10,7 @@ Instructions:
 
 - run the Python program "create_tasks.py" to create the task files.
 - There are 5 different tasks that need to be processed.  Each task needs to
-  have it's own process pool.  The number of processes in each pool is up to
+  have its own process pool.  The number of processes in each pool is up to
   you.  However, your goal is to process all of the tasks as quicky as possible
   using these pools.  You will need to try out different pool sizes.
 - The program will load a task one at a time and add it to the pool that is used
