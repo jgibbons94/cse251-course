@@ -115,7 +115,14 @@ def task_name(url):
             - or -
         {url} had an error receiving the information
     """
-    pass
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if "name" in data:
+            name = data['name']
+            return f"{url} has name {name}"
+    return f"{url} had an error receiving the information"
+
 
 
 def main():
