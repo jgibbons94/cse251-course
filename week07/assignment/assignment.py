@@ -23,11 +23,21 @@ Instructions:
 - the task_* functions contain general logic of what needs to happen
 
 
-TODO
+/proc/cpuinfo says:
 
-Add you comments here on the pool sizes that you used for your assignment and
-why they were the best choices.
+cpu cores	: 2
+cpu cores	: 2
+cpu cores	: 2
+cpu cores	: 2
 
+Total cores: 8
+
+pool  | size | reason
+prime |    3 | long algorithm O(n^2)
+word  |    3 | medium cpu-bound algorithm O(n^2)
+upper |    1 | quick cpu-bound algorithm O(n)
+sum   |    1 | quick cpu-bound algorithm O(n)
+name  |    8 | io-bound procedure worthy of threads won't use all the processes.
 """
 
 from datetime import datetime, timedelta
@@ -127,11 +137,11 @@ def task_name(url):
 
 def main():
     global result_primes, result_words, result_upper, result_sums, result_names
-    PRIME_PROCESSES = 4
-    WORD_PROCESSES  = 1
+    PRIME_PROCESSES = 3
+    WORD_PROCESSES  = 3
     UPPER_PROCESSES = 1
     SUM_PROCESSES   = 1
-    NAME_PROCESSES  = 40
+    NAME_PROCESSES  = 80
 
     log = Log(show_terminal=True)
     log.start_timer()
