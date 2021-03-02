@@ -47,7 +47,6 @@ def solve_path(maze, _pos=None):
         else:
             path = [(prow, pcol)]
             path.extend(possible_path)
-            print(path)
             return path
     return []
 
