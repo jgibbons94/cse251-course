@@ -28,11 +28,27 @@ COLOR = (0, 0, 255)
 
 # TODO add any functions
 
-def solve_path(maze):
+def solve_path(maze, _pos=None):
     """ Solve the maze and return the path.  The path is a list of positions, (x, y) """
     # TODO start add code here
+    (prow, pcol) = _pos if _pos is not None else maze.get_start_pos()
     path = []
-    return path
+    moves = maze.get_possible_moves(prow, pcol)
+    if len(moves) == 0:
+        if maze.at_end(prow, pcol):
+            return [(prow, pcol)]
+        else:
+            return []
+    for (mrow, mcol) in moves:
+        maze.move(mrow, mcol, COLOR)
+        possible_path = solve_path(maze, (mrow, mcol))
+        if len(possible_path) == 0:
+            maze.restore(mrow, mcol)
+        else:
+            path = [(prow, pcol)]
+            path.extend(possible_path)
+            return path
+    return []
 
 
 def get_path(log, filename):
