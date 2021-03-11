@@ -41,7 +41,18 @@ import random
 from multiprocessing.managers import SharedMemoryManager
 import multiprocessing as mp
 
+#buffer
 BUFFER_SIZE = 10
+# Everything is put in the front
+FRONT_POINTER = BUFFER_SIZE + 0
+# Everything is taken from the back
+BACK_POINTER = BUFFER_SIZE + 1
+# 0 unless the process is finished.
+PROCESS_FINISHED_POINTER = BUFFER_SIZE + 2
+INT_SIZE = 4
+TOTAL_SENT_INT_POINTER = 0 * INT_SIZE
+TOTAL_RECVD_SENT_POINTER = 1 * INT_SIZE
+TOTAL_BUFFER_SIZE = min(BUFFER_SIZE + 3, INT_SIZE*2)
 
 def main():
 
