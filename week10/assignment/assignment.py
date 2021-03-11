@@ -88,6 +88,14 @@ def recv_byte(mem, sem_send, sem_recv):
     sem_send.release()
     return x
 
+def rotate_recv_addr(buf):
+    """
+    increase the address in shared memory to receive from
+    """
+    
+    buf[BACK_POINTER] = buf[BACK_POINTER] + 1 % BUFFER_SIZE
+    pass
+
 def main():
 
     # This is the number of values that the writer will send to the reader
