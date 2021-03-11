@@ -54,6 +54,16 @@ TOTAL_SENT_INT_POINTER = 0 * INT_SIZE
 TOTAL_RECVD_SENT_POINTER = 1 * INT_SIZE
 TOTAL_BUFFER_SIZE = min(BUFFER_SIZE + 3, INT_SIZE*2)
 
+def send_byte(buf, sem_send, sem_recv, byte):
+    """
+    send a byte to the shared memory queue
+    """
+    sem_send.acquire()
+    buf[send_addr(buf)] = byte
+    rotate_send_addr(buf)
+    sem_recv.release()
+    pass
+
 def main():
 
     # This is the number of values that the writer will send to the reader
