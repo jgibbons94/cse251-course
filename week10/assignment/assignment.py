@@ -96,6 +96,9 @@ def rotate_recv_addr(buf):
     buf[BACK_POINTER] = buf[BACK_POINTER] + 1 % BUFFER_SIZE
     pass
 
+def recv_addr(buf):
+    return buf[BACK_POINTER]
+
 def main():
 
     # This is the number of values that the writer will send to the reader
