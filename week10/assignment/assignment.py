@@ -64,6 +64,12 @@ def send_byte(buf, sem_send, sem_recv, byte):
     sem_recv.release()
     pass
 
+def send_addr(buf):
+    """
+    return the index in the buffer of the next call to send
+    """
+    return buf[FRONT_POINTER]
+
 def main():
 
     # This is the number of values that the writer will send to the reader
