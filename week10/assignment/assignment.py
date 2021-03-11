@@ -70,6 +70,12 @@ def send_addr(buf):
     """
     return buf[FRONT_POINTER]
 
+def rotate_send_addr(buf):
+    """
+    increment the next index where the send will be sent
+    """
+    buf[FRONT_POINTER] = buf[FRONT_POINTER] + 1 % BUFFER_SIZE
+
 def main():
 
     # This is the number of values that the writer will send to the reader
