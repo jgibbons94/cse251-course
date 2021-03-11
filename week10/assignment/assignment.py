@@ -76,6 +76,18 @@ def rotate_send_addr(buf):
     """
     buf[FRONT_POINTER] = buf[FRONT_POINTER] + 1 % BUFFER_SIZE
 
+def recv_byte(mem, sem_send, sem_recv):
+    """
+    Receive a byte from the shared memory queue
+    """
+    #wait until there is something to receive
+    sem_recv.acquire()
+    x = mem[recv_addr(mem)]
+    rotate_recv_addr(mem)
+    #Signal there is space to send.
+    sem_send.release()
+    return x
+
 def main():
 
     # This is the number of values that the writer will send to the reader
