@@ -33,7 +33,7 @@ Instructions:
   the multiprocessing package.
 
 Add any comments for me:
-
+My testing shows this program may take up to 2 minutes to run.
 
 
 """
