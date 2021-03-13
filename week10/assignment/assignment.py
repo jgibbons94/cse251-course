@@ -83,6 +83,14 @@ def process_write(sl, front_lock, finished_lock, send_sem, recv_sem, items_to_se
         items_sent += 1
     finish_writing(sl, finished_lock, items_sent)
 
+def finish_writing(buf, finished_lock, total):
+    """
+    Signal that there will be nothing more sent to the buffer.
+    """
+    with finished_lock:
+        buf[PROCESS_FINISHED_POINTER] = True
+    set_total_sent(buf,total)
+
 def send_byte(buf, send_sem, recv_sem, front_lock, byte):
     """
     send a byte to the shared memory queue
