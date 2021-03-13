@@ -170,6 +170,9 @@ def rotate_recv_addr(buf):
     pass
 
 def recv_addr(buf):
+    """
+    Return the address in the buffer to receive next.
+    """
     return buf[BACK_POINTER]
 
 def main():
