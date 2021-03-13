@@ -71,6 +71,18 @@ TOTAL_SENT_COUNT_POINTER = BUFFER_SIZE + 3
 TOTAL_RECVD_COUNT_POINTER = BUFFER_SIZE + 4
 
 TOTAL_BUFFER_SIZE = BUFFER_SIZE + 5
+
+def process_write(sl, front_lock, finished_lock, send_sem, recv_sem, items_to_send):
+    """
+    Write items_to_send bytes to the buffer sl.
+    """
+    items_sent = 0
+    for _ in range(items_to_send):
+        b = random.randint(0, 255)
+        send_byte(sl, send_sem, recv_sem, front_lock, b)
+        items_sent += 1
+    finish_writing(sl, finished_lock, items_sent)
+
 def send_byte(buf, send_sem, recv_sem, front_lock, byte):
     """
     send a byte to the shared memory queue
