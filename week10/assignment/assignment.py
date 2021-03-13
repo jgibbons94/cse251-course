@@ -132,6 +132,17 @@ def process_read(sl, front_lock, finished_lock, send_sem, recv_sem):
     set_total_recvd(sl, total)
     pass
 
+def finished_reading(buf, front_lock, finished_lock):
+    """
+    True if there is nothing more to read and nothing more coming from the other process.
+    """
+    (finished_writing, caught_up) = (False, False)
+    with finished_lock:
+        finished_writing = buf[PROCESS_FINISHED_POINTER]
+    with front_lock:
+        caught_up = buf[FRONT_POINTER] == buf[BACK_POINTER]
+    return finished_writing and caught_up
+
 def recv_byte(mem, send_sem, recv_sem):
     """
     Receive a byte from the shared memory queue
