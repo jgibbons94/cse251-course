@@ -71,13 +71,14 @@ TOTAL_SENT_COUNT_POINTER = BUFFER_SIZE + 3
 TOTAL_RECVD_COUNT_POINTER = BUFFER_SIZE + 4
 
 TOTAL_BUFFER_SIZE = BUFFER_SIZE + 5
+def send_byte(buf, send_sem, recv_sem, front_lock, byte):
     """
     send a byte to the shared memory queue
     """
-    sem_send.acquire()
-    buf[send_addr(buf)] = byte
-    rotate_send_addr(buf)
-    sem_recv.release()
+    send_sem.acquire()
+    buf[send_addr(buf, front_lock)] = byte
+    rotate_send_addr(buf, front_lock)
+    recv_sem.release()
     pass
 
 def send_addr(buf):
@@ -92,16 +93,16 @@ def rotate_send_addr(buf):
     """
     buf[FRONT_POINTER] = buf[FRONT_POINTER] + 1 % BUFFER_SIZE
 
-def recv_byte(mem, sem_send, sem_recv):
+def recv_byte(mem, send_sem, recv_sem):
     """
     Receive a byte from the shared memory queue
     """
     #wait until there is something to receive
-    sem_recv.acquire()
+    recv_sem.acquire()
     x = mem[recv_addr(mem)]
     rotate_recv_addr(mem)
     #Signal there is space to send.
-    sem_send.release()
+    send_sem.release()
     return x
 
 def rotate_recv_addr(buf):
