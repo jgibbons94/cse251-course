@@ -107,11 +107,12 @@ def send_byte(buf, send_sem, recv_sem, front_lock, byte):
     recv_sem.release()
     pass
 
-def send_addr(buf):
+def send_addr(buf, front_lock):
     """
     return the index in the buffer of the next call to send
     """
-    return buf[FRONT_POINTER]
+    with front_lock:
+        return buf[FRONT_POINTER]
 
 def rotate_send_addr(buf):
     """
