@@ -199,11 +199,13 @@ def main():
     writer = mp.Process(target=process_write, args=(sl, front_lock, finished_lock, send_sem, recv_sem, items_to_send))
     reader = mp.Process(target=process_read, args=(sl, front_lock, finished_lock, send_sem, recv_sem))
 
-    # TODO - Start the processes and wait for them to finish
+    # DONE - Start the processes and wait for them to finish
+    [x.start() for x in (reader, writer)]
+    [x.join() for x in (reader, writer)]
 
-    print(f'{items_to_send} sent by the writer')
 
     # TODO - Display the number of numbers/items received by the reader.
+    print(f'{items_to_send} sent by the writer')
 
     smm.shutdown()
 
