@@ -195,7 +195,9 @@ def main():
     send_sem = mp.Semaphore(10)
     recv_sem = mp.Semaphore(0)
 
-    # TODO - create reader and writer processes
+    # DONE - create reader and writer processes
+    writer = mp.Process(target=process_write, args=(sl, front_lock, finished_lock, send_sem, recv_sem, items_to_send))
+    reader = mp.Process(target=process_read, args=(sl, front_lock, finished_lock, send_sem, recv_sem))
 
     # TODO - Start the processes and wait for them to finish
 
