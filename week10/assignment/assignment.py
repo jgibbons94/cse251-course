@@ -166,7 +166,7 @@ def rotate_recv_addr(buf):
     increase the address in shared memory to receive from
     """
     
-    buf[BACK_POINTER] = buf[BACK_POINTER] + 1 % BUFFER_SIZE
+    buf[BACK_POINTER] = (buf[BACK_POINTER] + 1) % BUFFER_SIZE
     pass
 
 def recv_addr(buf):
