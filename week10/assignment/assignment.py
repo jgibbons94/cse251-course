@@ -203,9 +203,11 @@ def main():
     [x.start() for x in (reader, writer)]
     [x.join() for x in (reader, writer)]
 
-
-    # TODO - Display the number of numbers/items received by the reader.
-    print(f'{items_to_send} sent by the writer')
+    # DONE - Display the number of numbers/items received by the reader.
+    items_sent = sl[TOTAL_SENT_COUNT_POINTER]
+    print(f'{items_sent} sent by the writer')
+    items_received = sl[TOTAL_RECVD_COUNT_POINTER]
+    print(f'{items_received} received by the reader')
 
     smm.shutdown()
 
