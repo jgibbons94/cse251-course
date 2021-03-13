@@ -91,6 +91,12 @@ def finish_writing(buf, finished_lock, total):
         buf[PROCESS_FINISHED_POINTER] = True
     set_total_sent(buf,total)
 
+def set_total_sent(buf, total):
+    """
+    Store the total sent in the buffer.
+    """
+    buf[TOTAL_SENT_COUNT_POINTER] = total
+
 def send_byte(buf, send_sem, recv_sem, front_lock, byte):
     """
     send a byte to the shared memory queue
