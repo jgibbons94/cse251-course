@@ -121,6 +121,17 @@ def rotate_send_addr(buf, front_lock):
     with front_lock:
         buf[FRONT_POINTER] = (buf[FRONT_POINTER] + 1) % BUFFER_SIZE
 
+def process_read(sl, front_lock, finished_lock, send_sem, recv_sem):
+    """
+    Read a byte from sl as long as there is still something to read in the buffer.
+    """
+    total = 0
+    while not finished_reading(sl,  front_lock, finished_lock):
+        recv_byte(sl, send_sem, recv_sem)
+        total += 1
+    set_total_recvd(sl, total)
+    pass
+
 def recv_byte(mem, send_sem, recv_sem):
     """
     Receive a byte from the shared memory queue
