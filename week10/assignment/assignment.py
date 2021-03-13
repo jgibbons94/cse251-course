@@ -114,11 +114,12 @@ def send_addr(buf, front_lock):
     with front_lock:
         return buf[FRONT_POINTER]
 
-def rotate_send_addr(buf):
+def rotate_send_addr(buf, front_lock):
     """
     increment the next index where the send will be sent
     """
-    buf[FRONT_POINTER] = buf[FRONT_POINTER] + 1 % BUFFER_SIZE
+    with front_lock:
+        buf[FRONT_POINTER] = (buf[FRONT_POINTER] + 1) % BUFFER_SIZE
 
 def recv_byte(mem, send_sem, recv_sem):
     """
