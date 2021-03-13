@@ -189,7 +189,11 @@ def main():
     sl = smm.ShareableList([0]*TOTAL_BUFFER_SIZE)
     sl[PROCESS_FINISHED_POINTER] = False
 
-    # TODO - Create any lock(s) or semaphore(s) that you feel you need
+    # DONE - Create any lock(s) or semaphore(s) that you feel you need
+    finished_lock = mp.Lock()
+    front_lock = mp.Lock()
+    send_sem = mp.Semaphore(10)
+    recv_sem = mp.Semaphore(0)
 
     # TODO - create reader and writer processes
 
