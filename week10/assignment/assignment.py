@@ -179,6 +179,8 @@ def main():
 
     # This is the number of values that the writer will send to the reader
     items_to_send = random.randint(100000, 1000000)
+    print(f"We will send {items_to_send} bytes")
+    print(f"That's {items_to_send // 1000} KB ({items_to_send >> 10} KiB) on a {BUFFER_SIZE}-byte buffer.")
 
     smm = SharedMemoryManager()
     smm.start()
