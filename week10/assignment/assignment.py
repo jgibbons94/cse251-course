@@ -42,19 +42,35 @@ from multiprocessing.managers import SharedMemoryManager
 import multiprocessing as mp
 
 #buffer
+#Space used by both processes
+# w writer, r reader
+# Semaphores
 BUFFER_SIZE = 10
-# Everything is put in the front
-FRONT_POINTER = BUFFER_SIZE + 0
-# Everything is taken from the back
-BACK_POINTER = BUFFER_SIZE + 1
-# 0 unless the process is finished.
-PROCESS_FINISHED_POINTER = BUFFER_SIZE + 2
-INT_SIZE = 4
-TOTAL_SENT_INT_POINTER = 0 * INT_SIZE
-TOTAL_RECVD_SENT_POINTER = 1 * INT_SIZE
-TOTAL_BUFFER_SIZE = min(BUFFER_SIZE + 3, INT_SIZE*2)
 
-def send_byte(buf, sem_send, sem_recv, byte):
+# Everything is put in the front
+# rw writer, r reader
+# LOCK
+FRONT_POINTER = BUFFER_SIZE + 0
+
+# Everything is taken from the back
+# rw reader
+# No lock necessary
+BACK_POINTER = BUFFER_SIZE + 1
+
+# False unless the process is finished.
+# w writer, r reader
+# LOCK
+PROCESS_FINISHED_POINTER = BUFFER_SIZE + 2
+
+# address w writer, r main
+# no lock necessary
+TOTAL_SENT_COUNT_POINTER = BUFFER_SIZE + 3
+
+# address w reader, r main
+# no lock necessary
+TOTAL_RECVD_COUNT_POINTER = BUFFER_SIZE + 4
+
+TOTAL_BUFFER_SIZE = BUFFER_SIZE + 5
     """
     send a byte to the shared memory queue
     """
