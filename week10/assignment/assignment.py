@@ -185,7 +185,9 @@ def main():
     smm = SharedMemoryManager()
     smm.start()
 
-    # TODO - Create a ShareableList to be used between the processes
+    # DONE - Create a ShareableList to be used between the processes
+    sl = smm.ShareableList([0]*TOTAL_BUFFER_SIZE)
+    sl[PROCESS_FINISHED_POINTER] = False
 
     # TODO - Create any lock(s) or semaphore(s) that you feel you need
 
