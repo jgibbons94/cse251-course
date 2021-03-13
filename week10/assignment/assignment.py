@@ -143,6 +143,12 @@ def finished_reading(buf, front_lock, finished_lock):
         caught_up = buf[FRONT_POINTER] == buf[BACK_POINTER]
     return finished_writing and caught_up
 
+def set_total_recvd(buf, total):
+    """
+    Set the total received in the specified location.
+    """
+    buf[TOTAL_RECVD_COUNT_POINTER] = total
+
 def recv_byte(mem, send_sem, recv_sem):
     """
     Receive a byte from the shared memory queue
