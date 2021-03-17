@@ -89,7 +89,22 @@ def security(passenger_list, lock):
     When the last security officer logs the last passenger, that officer adds 
     ALL_DONE to the passenger list.  Use this statement "print(f'Security: ALL Done')"
     """
-    pass
+    while True:
+        with lock:
+            #lock.acquire()
+            if ALL_DONE in passenger_list:
+                break
+            id = len(passenger_list) + 1
+            security_processing()
+            print(f'Security adding passenger: {id}', flush=True)
+            passenger_list.append(id)
+            if len(passenger_list) == TOTAL_PASSENGERS:
+                passenger_list.append(ALL_DONE)
+                print(f'Security: ALL Done', flush=True)
+                #lock.release()
+                break
+            #lock.release()
+        security_waiting()
 
 
 # -----------------------------------------------------------------------------
