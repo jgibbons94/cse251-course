@@ -31,7 +31,7 @@ The first will use ID = 1, the second passenger to arrive will use 2, etc.
 Instructions:
 
 - Use processes for the security (SECURITY_PERSONAL) and directors (DIRECTOR_PERSONAL)
-- Make sure the directors print the messages STARTING_READING_MESSAGE and STOPING_READING_MESSAGE
+- Make sure the directors print the messages STARTING_READING_MESSAGE and STOPPING_READING_MESSAGE
 - When using locks, the acquire() method must not use the timeout or block options. (ie., just lock.acquire())
 - This problem is harder if you use the Python 'with lock:' statement.
 - Add lots of print statements while debugging your program.  Remove them before 
@@ -55,7 +55,7 @@ DIRECTOR_PERSONAL = 4
 STARTING_READING_MESSAGE = 'Directors reading vvvvvvvvvvvvvvvvvvvvvvv'
 
 # When the last director ends reading the passenger list, display this message
-STOPING_READING_MESSAGE  = 'Directors have stopped reading ^^^^^^^^^^'
+STOPPING_READING_MESSAGE  = 'Directors have stopped reading ^^^^^^^^^^'
 
 # All done Passenger ID 
 ALL_DONE = -1
@@ -80,11 +80,12 @@ def director_processing():
 def security(passenger_list, lock):
     """
     while there are still passengers to arrive
-        security will wait for a passenger to arrive
+        security will wait for a passenger to arrive (security_waiting())
         get access to the passenger list
         add passenger ID to the list (this takes time)
-            when adding a passenger, use this print statement
-            print(f'Security adding passenger: {id}')
+            when adding a passenger, use this print statement 
+                print(f'Security adding passenger: {id}')
+            Take some time adding to the list (security_processing())
 
     When the last security officer logs the last passenger, that officer adds 
     ALL_DONE to the passenger list.  Use this statement "print(f'Security: ALL Done')"
@@ -96,14 +97,14 @@ def security(passenger_list, lock):
 def cruise_director(passenger_list, lock_directors, lock_security, directors_count):
     """
     while there are still passengers arriving (look for ALL_DONE)
-        director will wait to access the passenger list
+        director will wait to access the passenger list (director_waiting())
         if no security officer is updating the list
-            start reading the list.
+            start reading the list. 
             if this is the first director reading the list, display a message (STARTING_READING_MESSAGE)
             before reading, display the message:
                 print(f'Director reading: list size is {len(passenger_list)}')
-            take some time reading the list.  
-            after reading, if this is the last director, display message (STOPING_READING_MESSAGE)
+            take some time reading the list.  (director_processing())
+            after reading, if this is the last director, display message (STOPPING_READING_MESSAGE)
     """
     pass
 
