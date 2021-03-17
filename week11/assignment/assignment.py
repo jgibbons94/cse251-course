@@ -90,7 +90,22 @@ def security(passenger_list, lock):
     When the last security officer logs the last passenger, that officer adds 
     ALL_DONE to the passenger list.  Use this statement "print(f'Security: ALL Done')"
     """
-    pass
+    while True:
+        with lock:
+            #lock.acquire()
+            if ALL_DONE in passenger_list:
+                break
+            id = len(passenger_list) + 1
+            security_processing()
+            print(f'Security adding passenger: {id}', flush=True)
+            passenger_list.append(id)
+            if len(passenger_list) == TOTAL_PASSENGERS:
+                passenger_list.append(ALL_DONE)
+                print(f'Security: ALL Done', flush=True)
+                #lock.release()
+                break
+            #lock.release()
+        security_waiting()
 
 
 # -----------------------------------------------------------------------------
@@ -106,7 +121,22 @@ def cruise_director(passenger_list, lock_directors, lock_security, directors_cou
             take some time reading the list.  (director_processing())
             after reading, if this is the last director, display message (STOPPING_READING_MESSAGE)
     """
-    pass
+    boarding = True
+    while boarding:
+        with lock_directors:
+            if directors_count.value == 0:
+                lock_security.acquire()
+                print(STARTING_READING_MESSAGE, flush=True)
+            directors_count.value += 1
+        boarding = ALL_DONE not in passenger_list
+        print(f'Director reading: list size is {len(passenger_list)}', flush=True)
+        director_processing()
+        with lock_directors:
+            if directors_count.value == 1:
+                print(STOPING_READING_MESSAGE, flush=True)
+                lock_security.release()
+            directors_count.value -= 1
+        director_waiting()
 
 # -----------------------------------------------------------------------------
 def main():
