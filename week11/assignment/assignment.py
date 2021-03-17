@@ -120,7 +120,22 @@ def cruise_director(passenger_list, lock_directors, lock_security, directors_cou
             take some time reading the list.  
             after reading, if this is the last director, display message (STOPING_READING_MESSAGE)
     """
-    pass
+    boarding = True
+    while boarding:
+        with lock_directors:
+            if directors_count.value == 0:
+                lock_security.acquire()
+                print(STARTING_READING_MESSAGE, flush=True)
+            directors_count.value += 1
+        boarding = ALL_DONE not in passenger_list
+        print(f'Director reading: list size is {len(passenger_list)}', flush=True)
+        director_processing()
+        with lock_directors:
+            if directors_count.value == 1:
+                print(STOPING_READING_MESSAGE, flush=True)
+                lock_security.release()
+            directors_count.value -= 1
+        director_waiting()
 
 # -----------------------------------------------------------------------------
 def main():
