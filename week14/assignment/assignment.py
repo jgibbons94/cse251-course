@@ -2,7 +2,7 @@
 Course: CSE 251
 Lesson Week: 14
 File: assignment.py
-Author: <your name>
+Author: Jesse Gibbons
 Purpose: Assignment 13 - Family Search
 
 Instructions:
@@ -16,22 +16,41 @@ https://www.youtube.com/watch?v=86g8jAQug04
 
 Describe how to sped up part 1
 
-<Add your comments here>
+Organize families with list comprehensions and fetch them all concurrently.
+Prioritize fetching parents before children so we can
+recurse to fetch the parent families concurrently with
+requests to fetch the children.
 
+Before change:
+total_time                   : 102.31911579999996
+People and families / second : 3.8702445472070837
+
+After changes:
+total_time                   : 4.1270161000011285
+People and families / second : 88.44162250782114
 
 Describe how to sped up part 2
 
-<Add your comments here>
+Since part 2 does nothing, it cannot be faster.
+It also doesn't work as expected, so I can only make it slower.
+Breadth-first search is done one level at a time. It can be
+accomplished as follows:
+If the given list is not empty:
+    get every element in the list, and put all the results in a new list.
+    recurse with the new list.
 
 
 10% Bonus to speed up part 2
 
-<Add your comments here>
+Use a 5-semaphore to control the number of simultaneous requests.
+Within semaphore block, call code to request.
+Outside semaphore block, do all other processing.
 
 """
 import time
 import threading
 import multiprocessing as mp
+from multiprocessing.pool import ThreadPool
 import json
 import random
 import requests
@@ -281,45 +300,27 @@ def depth_fs_pedigree(family_id, tree):
     new_family = Family(family_id, req_family.response)
     tree.add_family(new_family)
 
-    husband = None
-    wife = None
-
     # Get husband details
-    husband_id = new_family.husband
+    husband_id, wife_id, children_ids = new_family.husband, new_family.wife, [c for c in new_family.children if not tree.does_person_exist(c)]
     print(f'   Retrieving Husband : {husband_id}')
-    req_person = Request_thread(f'{TOP_API_URL}/person/{husband_id}')
-    req_person.start()
-    req_person.join()
-    husband = Person(req_person.response)
-
-    # Get wife details
-    wife_id = new_family.wife
     print(f'   Retrieving Wife    : {wife_id}')
-    req_person = Request_thread(f'{TOP_API_URL}/person/{wife_id}')
-    req_person.start()
-    req_person.join()
-    wife = Person(req_person.response)
+    print(f'   Retrieving children: {str(children_ids)[1:-1]}')
+    req_parents = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in [husband_id, wife_id]]
+    [t.start() for t in req_parents]
+    [t.join() for t in req_parents]
+    parents = [Person(r.response) for r in req_parents]
 
-    # Retrieve the children
-    print(f'   Retrieving children: {str(new_family.children)[1:-1]}')
-    for child_id in new_family.children:
-        # Don't request a person if that person is in the tree already
-        if not tree.does_person_exist(child_id):
-            req_child = Request_thread(f'{TOP_API_URL}/person/{child_id}')
-            req_child.start()
-            req_child.join()
-            child = Person(req_child.response)
-            tree.add_person(child)
-        
-    # go up the path of the husband's parents
-    if husband != None:
-        tree.add_person(husband)
-        depth_fs_pedigree(husband.parents, tree)
+    family_threads = [threading.Thread(target=depth_fs_pedigree, args=(p.parents, tree)) for p in parents if p is not None]
+    req_children = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in children_ids]
 
-    # go up the path of the wife's parents
-    if wife != None:
-        tree.add_person(wife)
-        depth_fs_pedigree(wife.parents, tree)
+    [t.start() for t in req_children]
+    [tree.add_person(person) for person in parents]
+    [thread.start() for thread in family_threads]
+    [t.join() for t in req_children]
+    for person in req_children:
+        if person is not None:
+            tree.add_person(Person(person.response))
+    [thread.join() for thread in family_threads]
 
 # -----------------------------------------------------------------------------
 # You should not change this function
@@ -346,14 +347,74 @@ def part1(log, start_id, generations):
     
 # -----------------------------------------------------------------------------
 def breadth_fs_pedigree(start_id, tree):
-    # TODO - implement breadth first retrieval
+    #      - implement breadth first retrieval
     #      - Limit number of concurrent connections to the FS server to 5
     # This video might help understand BFS
     # https://www.youtube.com/watch?v=86g8jAQug04
 
-    print('WARNING: BFS function not written')
+    req_sem = threading.Semaphore(5)
+    #tree_lock = threading.Lock()
+    #Used internally.
+    def get_family(family_id):
+        """
+        Fetches the family from id.
+        Add family to tree.
+        Put parents in current_parent_id_list
+        put children in current_child_id_list
+        """
+        req_family = Request_thread(f'{TOP_API_URL}/family/{family_id}')
+        with req_sem:
+            #We are in a helper thread, so fetch without making a new thread.
+            req_family.run()
+        new_family = Family(family_id, req_family.response)
+        #with tree_lock:
+        tree.add_family(new_family)
+        parents_ids = [new_family.husband, new_family.wife]
+        current_parent_id_list.extend(parents_ids)
+        children_ids = [c for c in new_family.children if not tree.does_person_exist(c)]
+        current_child_id_list.extend(children_ids)
 
-    pass
+    def get_parent(id):
+        """
+        Fetch the person of the given id.
+        Append the result's parents' family id to next_family_id_list
+        Return the result person
+        """
+        req_person = Request_thread(f'{TOP_API_URL}/person/{id}')
+        with req_sem:
+            req_person.run()
+        new_person = Person(req_person.response)
+        if new_person != None:
+            #with tree_lock:
+            tree.add_person(new_person)
+            return new_person.parents
+
+    def get_child(id):
+        """
+        Fetch the person of the given id.
+        Return the result person.
+        """
+        get_parent(id)
+
+    current_family_id_list = [start_id]
+    next_family_id_list = []
+    while len(current_family_id_list) !=  0:
+        current_parent_id_list = []
+        current_child_id_list = []
+        with ThreadPool(10) as pool:
+            # get family and collect parents, children
+            pool.map(get_family, current_family_id_list)
+            print("got all the family pool")
+            print(f"parents: {current_parent_id_list}")
+            print(f"children: {current_child_id_list}")
+            # get parents and collect people, next generation family ids
+            next_family_id_list = pool.map(get_parent, current_parent_id_list)
+            print(f"next family id list: {next_family_id_list}")
+            # get children and collect people
+            pool.map(get_child, current_child_id_list)
+        current_family_id_list = [id for id in next_family_id_list if id is not None]
+        next_family_id_list = []
+    
 
 # -----------------------------------------------------------------------------
 # You should not change this function
