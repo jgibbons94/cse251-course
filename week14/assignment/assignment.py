@@ -2,7 +2,7 @@
 Course: CSE 251
 Lesson Week: 14
 File: assignment.py
-Author: <your name>
+Author: Jesse Gibbons
 Purpose: Assignment 13 - Family Search
 
 Instructions:
