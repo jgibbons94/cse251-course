@@ -16,8 +16,18 @@ https://www.youtube.com/watch?v=86g8jAQug04
 
 Describe how to sped up part 1
 
-<Add your comments here>
+Organize families with list comprehensions and fetch them all concurrently.
+Prioritize fetching parents before children so we can
+recurse to fetch the parent families concurrently with
+requests to fetch the children.
 
+Before change:
+total_time                   : 102.31911579999996
+People and families / second : 3.8702445472070837
+
+After changes:
+total_time                   : 4.1270161000011285
+People and families / second : 88.44162250782114
 
 Describe how to sped up part 2
 
