@@ -287,17 +287,22 @@ def depth_fs_pedigree(family_id, tree):
     print(f'   Retrieving Husband : {husband_id}')
     print(f'   Retrieving Wife    : {wife_id}')
     print(f'   Retrieving children: {str(children_ids)[1:-1]}')
-    req_person = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in [husband_id, wife_id] + children_ids]
+    req_parents = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in [husband_id, wife_id]]
+    [t.start() for t in req_parents]
+    [t.join() for t in req_parents]
+    parents = [Person(r.response) for r in req_parents]
 
-    [t.start() for t in req_person]
-    [t.join() for t in req_person]
-    [husband, wife] = [Person(r.response) for r in req_person[0:2]]
-    for person in req_person:
+    family_threads = [threading.Thread(target=depth_fs_pedigree, args=(p.parents, tree)) for p in parents if p is not None]
+    req_children = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in children_ids]
+
+    [t.start() for t in req_children]
+    [tree.add_person(person) for person in parents]
+    [thread.start() for thread in family_threads]
+    [t.join() for t in req_children]
+    for person in req_children:
         if person is not None:
             tree.add_person(Person(person.response))
-    threads = [threading.Thread(target=depth_fs_pedigree, args=(p.parents, tree)) for p in [husband, wife] if p is not None]
-    [thread.start() for thread in threads]
-    [thread.join() for thread in threads]
+    [thread.join() for thread in family_threads]
 
 # -----------------------------------------------------------------------------
 # You should not change this function
