@@ -284,43 +284,22 @@ def depth_fs_pedigree(family_id, tree):
 
     husband = None
     wife = None
-
     # Get husband details
-    husband_id = new_family.husband
+    husband_id, wife_id, children_ids = new_family.husband, new_family.wife, [c for c in new_family.children if not tree.does_person_exist(c)]
     print(f'   Retrieving Husband : {husband_id}')
-    req_person = Request_thread(f'{TOP_API_URL}/person/{husband_id}')
-    req_person.start()
-    req_person.join()
-    husband = Person(req_person.response)
-
-    # Get wife details
-    wife_id = new_family.wife
     print(f'   Retrieving Wife    : {wife_id}')
-    req_person = Request_thread(f'{TOP_API_URL}/person/{wife_id}')
-    req_person.start()
-    req_person.join()
-    wife = Person(req_person.response)
+    print(f'   Retrieving children: {str(children_ids)[1:-1]}')
+    req_person = [Request_thread(f'{TOP_API_URL}/person/{id}') for id in [husband_id, wife_id] + children_ids]
 
-    # Retrieve the children
-    print(f'   Retrieving children: {str(new_family.children)[1:-1]}')
-    for child_id in new_family.children:
-        # Don't request a person if that person is in the tree already
-        if not tree.does_person_exist(child_id):
-            req_child = Request_thread(f'{TOP_API_URL}/person/{child_id}')
-            req_child.start()
-            req_child.join()
-            child = Person(req_child.response)
-            tree.add_person(child)
-        
-    # go up the path of the husband's parents
-    if husband != None:
-        tree.add_person(husband)
-        depth_fs_pedigree(husband.parents, tree)
-
-    # go up the path of the wife's parents
-    if wife != None:
-        tree.add_person(wife)
-        depth_fs_pedigree(wife.parents, tree)
+    [t.start() for t in req_person]
+    [t.join() for t in req_person]
+    [husband, wife] = [Person(r.response) for r in req_person[0:2]]
+    for person in req_person:
+        if person is not None:
+            tree.add_person(Person(person.response))
+    threads = [threading.Thread(target=depth_fs_pedigree, args=(p.parents, tree)) for p in [husband, wife] if p is not None]
+    [thread.start() for thread in threads]
+    [thread.join() for thread in threads]
 
 # -----------------------------------------------------------------------------
 # You should not change this function
