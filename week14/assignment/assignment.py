@@ -31,7 +31,13 @@ People and families / second : 88.44162250782114
 
 Describe how to sped up part 2
 
-<Add your comments here>
+Since part 2 does nothing, it cannot be faster.
+It also doesn't work as expected, so I can only make it slower.
+Breadth-first search is done one level at a time. It can be
+accomplished as follows:
+If the given list is not empty:
+    get every element in the list, and put all the results in a new list.
+    recurse with the new list.
 
 
 10% Bonus to speed up part 2
