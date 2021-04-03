@@ -282,8 +282,6 @@ def depth_fs_pedigree(family_id, tree):
     new_family = Family(family_id, req_family.response)
     tree.add_family(new_family)
 
-    husband = None
-    wife = None
     # Get husband details
     husband_id, wife_id, children_ids = new_family.husband, new_family.wife, [c for c in new_family.children if not tree.does_person_exist(c)]
     print(f'   Retrieving Husband : {husband_id}')
