@@ -42,7 +42,9 @@ If the given list is not empty:
 
 10% Bonus to speed up part 2
 
-<Add your comments here>
+Use a 5-semaphore to control the number of simultaneous requests.
+Within semaphore block, call code to request.
+Outside semaphore block, do all other processing.
 
 """
 import time
